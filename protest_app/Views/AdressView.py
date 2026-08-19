@@ -1,38 +1,79 @@
 from rest_framework.response import Response
 from rest_framework import status
-from protest_app.Serializers.addressserializer import *  
 from rest_framework.views import APIView
-from protest_app.models import *
-
+from django.shortcuts import get_object_or_404
+from protest_app.models import CountryModel, StatesModel, CitiesModel
+from protest_app.Serializers.addressserializer import (
+    CountriesListSerializer, StateSerializer, CitiesSerializer
+)
+from protest_app.pagination import ListPagination
 
 
 class CountriesAPI(APIView):
-    def get(self,request,id=None):
+    def get(self, request, id=None):
         if id:
-            countries = CountryModel.objects.filter(pk=id)
-            serializer = CountriesSerializer(countries, many = True)
-            return Response({'status': True, 'data':serializer.data,'message':'Countries successfully fetched'},status=status.HTTP_200_OK)
-        countries = CountryModel.objects.all()
-        serializer = CountriesSerializer(countries, many=True)
-        return Response({'status': True, 'data':serializer.data,'message':'Country successfully fetched'},status=status.HTTP_200_OK)
-    
+            country = get_object_or_404(CountryModel, pk=id)
+            serializer = CountriesListSerializer(country)
+            return Response({'status': True, 'data': serializer.data, 'message': 'Country successfully fetched'}, status=status.HTTP_200_OK)
+
+
+        countries = CountryModel.objects.all().order_by('country_name')
+
+        search = request.query_params.get('search')
+        if search:
+            countries = countries.filter(country_name__icontains=search)
+
+        serializer = CountriesListSerializer(countries, many=True)
+        return Response({'status': True, 'data': serializer.data, 'message': 'Countries successfully fetched'}, status=status.HTTP_200_OK)
+
 
 class StatesAPI(APIView):
-    def get(self,request,id=None):
+    """
+    GET /states/                          -> all states (paginated)
+    GET /states/<id>/                     -> ONE state by its own pk
+    GET /states/?country_id=<country_id>  -> states filtered by country (paginated)
+    """
+    def get(self, request, id=None):
         if id:
-            states = StatesModel.objects.filter(country=id)
-            serializer = StateSerializer(states, many = True)
-            return Response({'status': True, 'data':serializer.data,'message':'States successfully fetched'},status=status.HTTP_200_OK)
-        states = StatesModel.objects.all()
-        serializer = StateSerializer(states, many = True)
-        return Response({'status': True, 'data':serializer.data,'message':'States successfully fetched'},status=status.HTTP_200_OK)
-    
+            state = get_object_or_404(StatesModel, pk=id)
+            serializer = StateSerializer(state)
+            return Response({'status': True, 'data': serializer.data, 'message': 'State successfully fetched'}, status=status.HTTP_200_OK)
+
+
+        states = StatesModel.objects.all().order_by('name')
+        country_id = request.query_params.get('country_id')
+        if country_id:
+            states = states.filter(country=country_id)
+
+        search = request.query_params.get('search')
+        if search:
+            states = states.filter(name__icontains=search)
+
+        serializer = StateSerializer(states, many=True)
+        return Response({'status': True, 'data': serializer.data, 'message': 'States successfully fetched'}, status=status.HTTP_200_OK)
+
+
 class CitiesAPI(APIView):
-    def get(self,request,id=None):
+    """
+    GET /cities/                      -> all cities (paginated)
+    GET /cities/<id>/                 -> ONE city by its own pk
+    GET /cities/?state_id=<state_id>  -> cities filtered by state (paginated)
+    """
+    def get(self, request, id=None):
         if id:
-            cities = CitiesModel.objects.filter(state=id)
-            serializer = CitiesSerializer(cities, many = True)
-            return Response({'status': True, 'data':serializer.data,'message':'Cities successfully fetched'},status=status.HTTP_200_OK)
-        cities = CitiesModel.objects.all()
-        serializer = CitiesSerializer(cities, many = True)
-        return Response({'status': True, 'data':serializer.data,'message':'Cities successfully fetched'},status=status.HTTP_200_OK)
+            city = get_object_or_404(CitiesModel, pk=id)
+            serializer = CitiesSerializer(city)
+            return Response({'status': True, 'data': serializer.data, 'message': 'City successfully fetched'}, status=status.HTTP_200_OK)
+
+
+        cities = CitiesModel.objects.all().order_by('name')
+        state_id = request.query_params.get('state_id')
+        if state_id:
+            cities = cities.filter(state=state_id)
+
+        search = request.query_params.get('search')
+        if search:
+            cities = cities.filter(name__icontains=search)
+
+        serializer = CitiesSerializer(cities, many=True)
+        return Response({'status': True, 'data': serializer.data, 'message': 'Cities successfully fetched'}, status=status.HTTP_200_OK)

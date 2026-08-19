@@ -1,16 +1,19 @@
 from django.contrib import admin
 from .models import CountryModel, StatesModel, CitiesModel, Members
+from import_export.admin import ImportExportModelAdmin
 
 
 @admin.register(CountryModel)
-class CountryAdmin(admin.ModelAdmin):
+# class CountryAdmin(admin.ModelAdmin):
+class CountryAdmin(ImportExportModelAdmin):
     list_display = ("country_name", "country_code", "currency", "calling_code")
     search_fields = ("country_name", "country_code")
     ordering = ("country_name",)
 
 
 @admin.register(StatesModel)
-class StateAdmin(admin.ModelAdmin):
+# class StateAdmin(admin.ModelAdmin):
+class StatesAdmin(ImportExportModelAdmin):
     list_display = ("name", "country")
     search_fields = ("name", "country__country_name")
     list_filter = ("country",)
@@ -18,7 +21,8 @@ class StateAdmin(admin.ModelAdmin):
 
 
 @admin.register(CitiesModel)
-class CityAdmin(admin.ModelAdmin):
+# class CityAdmin(admin.ModelAdmin):
+class CitiesAdmin(ImportExportModelAdmin):
     list_display = ("name", "state", "country", "is_active")
     search_fields = ("name", "state__name", "country__country_name")
     list_filter = ("country", "state", "is_active")

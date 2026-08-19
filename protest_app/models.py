@@ -19,11 +19,6 @@ class StatesModel(models.Model):
     country = models.ForeignKey(CountryModel, on_delete=models.CASCADE, related_name="states")
     name = models.CharField(max_length=255)
 
-    class Meta:
-        verbose_name = 'state'
-        verbose_name_plural = 'states'
-        unique_together = ['country', 'name']
-
     def __str__(self):
         return self.name
 
@@ -33,11 +28,6 @@ class CitiesModel(models.Model):
     state = models.ForeignKey(StatesModel, on_delete=models.CASCADE, related_name="cities")
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
-
-    class Meta:
-        verbose_name = 'city'
-        verbose_name_plural = 'cities'
-        unique_together = ['state', 'name']
 
     def __str__(self):
         return self.name

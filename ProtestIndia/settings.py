@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'protest_app',
     'rest_framework',
     'corsheaders',
+    'import_export',
 ]
 
 MIDDLEWARE = [
@@ -114,7 +115,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+# TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
