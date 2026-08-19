@@ -6,7 +6,6 @@ from protest_app.models import CountryModel, StatesModel, CitiesModel
 from protest_app.Serializers.addressserializer import (
     CountriesListSerializer, StateSerializer, CitiesSerializer
 )
-from protest_app.pagination import ListPagination
 
 
 class CountriesAPI(APIView):
